@@ -1,0 +1,95 @@
+/* VOICE: honest, non-blaming, practical — a campaign that hands you the next step
+   IDEA: the campaign key — the certificate is the bow, skills are the teeth, the dashed tooth is your next step
+   PICTURE: one large key in the hero that opens the "job" lock; the same key becomes each visitor's result
+   COLOUR and TYPE: charcoal ground, warm white pages, gold only for skills and calls to action; Cairo + Tajawal
+   LAYOUT: charcoal hero band, then warm white bands; phone first, one column under 720px */
+:root{color-scheme:light;--ch:#34383D;--ink:#1E2023;--ye:#F4C542;--wh:#F4F2ED;--bl:#71818A;--mute:#56656D;--grey:#C9D1D5;--line:#D9D6CE;--card:#FFFFFF;--gold-ink:#8A6A12}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--wh);color:var(--ink);font:17px/1.6 'Tajawal',system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.cairo{font-family:'Cairo','Tajawal',sans-serif}
+h1{font-weight:900;font-size:clamp(36px,7vw,60px);line-height:1.08;margin:0 0 14px;text-wrap:balance}
+h2{font-weight:900;font-size:clamp(28px,4.6vw,42px);line-height:1.15;margin:0 0 10px;text-wrap:balance}
+h3{font-weight:800;font-size:20px;line-height:1.35;margin:0 0 6px}
+p{margin:0 0 14px}
+a{color:inherit}
+img{max-width:100%}
+.in{max-width:1180px;margin:0 auto}
+.band{padding:clamp(36px,6vw,80px) max(5vw,16px)}
+.dark{background:var(--ch);color:var(--wh)}
+.lead{font-size:clamp(18px,2.2vw,21px);line-height:1.6}
+.dark .lead{color:#E4E2DC}
+.muted{color:var(--mute)}
+.dark .muted{color:var(--grey)}
+.small{font-size:14px}
+.ye{color:var(--ye)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;background:var(--ch);color:var(--wh);border-bottom:1px solid #43484E}
+.nav .in{display:flex;align-items:center;gap:16px;padding:10px max(5vw,16px);flex-wrap:wrap}
+.nav .brand{display:flex;align-items:center;flex:none}
+.nav .brand img{height:36px;width:auto;display:block}
+.nav .links{display:flex;gap:4px;flex-wrap:wrap;margin-inline-start:auto}
+.nav .links a{text-decoration:none;padding:8px 12px;border-radius:10px;font:700 16px 'Tajawal',sans-serif;color:#E4E2DC;min-height:40px;display:inline-flex;align-items:center}
+.nav .links a:hover{background:#43484E}
+.nav .links a[aria-current=page]{color:var(--ch);background:var(--ye)}
+@media(max-width:720px){.nav .links{margin-inline-start:0;width:100%;overflow-x:auto;flex-wrap:nowrap}.nav .links a{flex:none;padding:6px 10px;font-size:15px}}
+
+/* buttons */
+.btn{appearance:none;border:0;border-radius:14px;min-height:52px;padding:12px 22px;font:900 18px/1.2 'Cairo',sans-serif;cursor:pointer;background:var(--ye);color:var(--ch);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:inherit;border:2px solid currentColor}
+.btn.dark{background:var(--ch);color:var(--wh)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ye);outline-offset:3px}
+.light-focus :focus-visible{outline-color:var(--ch)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.link{appearance:none;border:0;background:none;color:inherit;font:700 16px 'Tajawal',sans-serif;cursor:pointer;padding:10px 4px;min-height:44px;text-decoration:underline;text-underline-offset:4px}
+.link:disabled{opacity:.35;cursor:default;text-decoration:none}
+
+/* cards & grids */
+.card{background:var(--card);color:var(--ink);border-radius:20px;padding:22px clamp(18px,3vw,28px);border:1px solid var(--line)}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g6{grid-template-columns:repeat(6,minmax(0,1fr))}
+@media(max-width:900px){.g4,.g6{grid-template-columns:repeat(3,minmax(0,1fr))}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}.g6{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pill{display:inline-flex;align-items:center;white-space:nowrap;font:800 14px 'Cairo',sans-serif;border-radius:8px;padding:2px 10px;background:#ECEAE4;color:var(--ch)}
+.pill.ye{background:var(--ye);color:var(--ch)}
+.note{background:#FFF6D9;border:1px solid #EBD38A;color:#5A4A12;border-radius:12px;padding:10px 14px;font-size:15px}
+.dark .note{background:#43484E;border-color:#5A6066;color:#E4E2DC}
+
+/* forms */
+label{display:block;font:700 15px 'Tajawal',sans-serif;margin:0 0 6px;color:var(--ch)}
+input[type=text],input[type=tel],input[type=email],input[type=password],select{width:100%;min-height:50px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);font:500 16px 'Tajawal',sans-serif;padding:10px 14px}
+input:focus,select:focus{border-color:var(--ch)}
+.field{margin-bottom:14px}
+.check{display:flex;gap:10px;align-items:flex-start;font:500 15px/1.5 'Tajawal',sans-serif;color:var(--ink)}
+.check input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--ch)}
+.err{color:#A3261C;font-size:15px;min-height:22px}
+
+/* key svg */
+.key{width:100%;height:auto;display:block}
+.key text{font-family:'Cairo',sans-serif;font-weight:700}
+
+/* bars */
+.bar{height:10px;border-radius:5px;background:#E4E2DC;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ye);border-radius:5px;transition:width .4s}
+.dark .bar{background:#4A4F55}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:start;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:800 14px 'Cairo',sans-serif;color:var(--mute)}
+.scroll{overflow-x:auto}
+@media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7em;margin-inline-start:-7.5em;font-weight:700;color:var(--mute);white-space:normal}.stack td:empty{display:none}}
+
+footer.site{background:var(--ch);color:var(--grey);font-size:14px;line-height:1.7}
+footer.site .in{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
+footer.site img{height:34px;width:auto}
+[hidden]{display:none!important}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.bar i,.btn{transition:none}}

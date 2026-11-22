@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>لوحة تحكم الحملة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:22px}
+.tab{appearance:none;border:0;background:none;padding:12px 16px;min-height:48px;font:800 17px 'Cairo',sans-serif;color:var(--mute);cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tab[aria-selected=true]{color:var(--ch);border-bottom-color:var(--ye)}
+.kpi b{display:block;font:900 clamp(40px,6vw,56px)/1 'Cairo',sans-serif;color:var(--ch);margin:6px 0 10px}
+.kpi b small{font-size:20px;color:var(--mute)}
+.kpi .lbl{font:800 16px 'Cairo',sans-serif;color:var(--mute)}
+.hrow{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 5.5em;gap:12px;align-items:center;padding:7px 0;font-size:16px}
+.hrow b{font-family:'Cairo',sans-serif;text-align:left;white-space:nowrap}
+.hrow.weak span:first-child{font-weight:700}
+.hrow.weak .bar i{background:var(--bl)}
+.days{display:flex;align-items:flex-end;gap:4px;height:170px;padding-top:18px}
+.days div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;font:700 11px 'Cairo',sans-serif;color:var(--mute)}
+.days i{display:block;width:100%;max-width:28px;background:var(--ye);border-radius:4px 4px 0 0;min-height:2px}
+.days .z i{background:#E4E2DC}
+.status{display:inline-flex;gap:8px;align-items:center;font:800 14px 'Cairo',sans-serif;padding:6px 12px;border-radius:999px}
+.status.live{background:#DDF0E3;color:#1F5C33}
+.status.demo{background:#FFF6D9;color:#5A4A12}
+.status::before{content:"";width:9px;height:9px;border-radius:5px;background:currentColor}
+.login{max-width:440px;margin:6vh auto}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+.item h3{margin:0 0 4px}
+.item .acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.item .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.off{opacity:.6}
+.skills-pick{display:flex;flex-wrap:wrap;gap:8px}
+.skills-pick label{display:inline-flex;gap:6px;align-items:center;border:2px solid var(--line);border-radius:999px;padding:6px 12px;margin:0;font-weight:500;cursor:pointer;min-height:42px;background:#fff}
+.skills-pick input{width:18px;height:18px;accent-color:var(--ch)}
+textarea{width:100%;min-height:80px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);font:500 16px 'Tajawal',sans-serif;padding:10px 14px;resize:vertical}
+input[type=number],input[type=url]{width:100%;min-height:50px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);font:500 16px 'Tajawal',sans-serif;padding:10px 14px}
+.formcard{border:2px solid var(--ye)}
+.confirm{background:#FBEDEC;border:1px solid #E8B4AE;border-radius:12px;padding:10px 14px;margin-top:10px;font-size:15px}
+@media(max-width:600px){.hrow{grid-template-columns:minmax(0,1fr) 5.5em}.hrow .bar{grid-column:1/-1;grid-row:2}.item{grid-template-columns:minmax(0,1fr)}.item .acts{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="in">
+  <a class="brand" href="index.html" aria-label="الموقع"><img src="logo.svg" alt="مش بس شهادة"></a>
+  <div class="links"><a href="index.html">الموقع</a><a aria-current="page">لوحة التحكم</a></div>
+</div></nav>
+
+<main class="band light-focus">
+  <div class="in">
+    <div id="login" class="card login" hidden>
+      <h1 style="font-size:34px">دخول لوحة التحكم</h1>
+      <p class="muted">للمسؤولة عن الحملة فقط.</p>
+      <form id="lf" novalidate>
+        <div class="field"><label for="le">البريد الإلكتروني</label><input type="email" id="le" autocomplete="username" dir="ltr" style="text-align:right"></div>
+        <div class="field"><label for="lp">كلمة السر</label><input type="password" id="lp" autocomplete="current-password" dir="ltr" style="text-align:right"></div>
+        <p class="err" id="lerr" aria-live="polite"></p>
+        <button class="btn dark" type="submit" id="lbtn">دخول</button>
+      </form>
+    </div>
+
+    <div id="dash" hidden>
+      <div class="top">
+        <div><h1 style="margin:0">لوحة تحكم الحملة</h1><p class="muted" style="margin:4px 0 0" id="updated"></p></div>
+        <div class="row"><span class="status" id="status"></span><button class="btn ghost" type="button" id="refresh" style="min-height:44px">تحديث</button><button class="link" type="button" id="logout" hidden>خروج</button></div>
+      </div>
+      <p class="note" id="demoNote" hidden>وضع تجريبي: الموقع لسا مش مربوط بـ Firebase، فكل شي هون محفوظ على هذا الجهاز بس. بعد ما تحطي إعدادات Firebase بملف config.js بتصير البيانات من كل الزوار، والتعديلات بتظهر للكل.</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="stats" aria-selected="true">الأرقام</button>
+        <button class="tab" role="tab" data-tab="ws" aria-selected="false">الورش</button>
+        <button class="tab" role="tab" data-tab="opp" aria-selected="false">فرص التدريب</button>
+        <button class="tab" role="tab" data-tab="regs" aria-selected="false">التسجيلات</button>
+      </div>
+
+      <!-- STATS -->
+      <section data-pane="stats">
+        <div class="grid g4" style="margin-bottom:18px">
+          <div class="card kpi"><span class="lbl">الاختبارات المكتملة</span><b id="kTests">0</b><div class="bar"><i id="kTestsBar" style="width:0"></i></div><p class="small muted" style="margin:8px 0 0" id="kTestsT"></p></div>
+          <div class="card kpi"><span class="lbl">متوسط النتيجة</span><b id="kAvg">–</b><p class="small muted" style="margin:0" id="kAvgT"></p></div>
+          <div class="card kpi"><span class="lbl">التسجيل بالورش</span><b id="kRegs">0</b><div class="bar"><i id="kRegsBar" style="width:0"></i></div><p class="small muted" style="margin:8px 0 0" id="kRegsT"></p></div>
+          <div class="card kpi"><span class="lbl">اختبارات آخر 7 أيام</span><b id="kWeek">0</b><p class="small muted" style="margin:0" id="kWeekT"></p></div>
+        </div>
+        <div class="grid g2">
+          <div class="card"><h3>متوسط كل مهارة (من 4)</h3><p class="small muted">المهارات الأضعف بلون رمادي، وهي أولوية محتوى الحملة والورش.</p><div id="skills"></div></div>
+          <div class="card"><h3>توزيع النتائج</h3><p class="small muted">حسب مستويات الملحق ج.</p><div id="bands"></div></div>
+        </div>
+        <div class="card" style="margin-top:18px"><h3>الاختبارات المكتملة حسب اليوم (آخر 21 يوم)</h3><div class="days" id="days" role="img" aria-label="عدد الاختبارات المكتملة يومياً"></div></div>
+      </section>
+
+      <!-- WORKSHOPS -->
+      <section data-pane="ws" hidden>
+        <div class="top"><h2 style="margin:0">الورش</h2><button class="btn dark" type="button" id="wsNew">+ ورشة جديدة</button></div>
+        <div id="wsSeed"></div>
+        <div class="card formcard" id="wsFormCard" hidden style="margin-bottom:18px">
+          <h3 id="wsFormTitle">ورشة جديدة</h3>
+          <form id="wsForm" novalidate>
+            <div class="grid g2" style="gap:0 16px">
+              <div class="field"><label for="wName">اسم الورشة</label><input type="text" id="wName" maxlength="60"></div>
+              <div class="field"><label for="wOutput">شو بيطلع فيه المشارك</label><input type="text" id="wOutput" maxlength="120"></div>
+              <div class="field" style="grid-column:1/-1"><label for="wAbout">وصف قصير</label><textarea id="wAbout" maxlength="300"></textarea></div>
+              <div class="field"><label for="wDate">الموعد</label><input type="text" id="wDate" maxlength="80" placeholder="مثلاً: الخميس 10 كانون الأول، 4 العصر"></div>
+              <div class="field"><label for="wPlace">المكان</label><input type="text" id="wPlace" maxlength="100"></div>
+              <div class="field"><label for="wSeats">عدد المقاعد (0 = بدون حد)</label><input type="number" id="wSeats" min="0" max="500" step="1" dir="ltr" style="text-align:right"></div>
+              <div class="field"><label for="wOrder">الترتيب بالموقع</label><input type="number" id="wOrder" min="0" max="99" step="1" dir="ltr" style="text-align:right"></div>
+            </div>
+            <div class="field"><label>المهارات اللي بتبنيها (بتنربط بنتيجة الاختبار)</label><div class="skills-pick" id="wSkills"></div></div>
+            <label class="check" style="margin-bottom:8px"><input type="checkbox" id="wOpen"><span>التسجيل مفتوح</span></label>
+            <label class="check"><input type="checkbox" id="wActive"><span>ظاهرة بالموقع</span></label>
+            <p class="err" id="wErr" aria-live="polite"></p>
+            <div class="row"><button class="btn dark" type="submit" id="wSave">احفظي</button><button class="link" type="button" id="wCancel">إلغاء</button></div>
+          </form>
+        </div>
+        <div class="grid" id="wsList"></div>
+      </section>
+
+      <!-- OPPORTUNITIES -->
+      <section data-pane="opp" hidden>
+        <div class="top"><h2 style="margin:0">فرص التدريب</h2><button class="btn dark" type="button" id="opNew">+ فرصة جديدة</button></div>
+        <div class="card formcard" id="opFormCard" hidden style="margin-bottom:18px">
+          <h3 id="opFormTitle">فرصة جديدة</h3>
+          <form id="opForm" novalidate>
+            <div class="grid g2" style="gap:0 16px">
+              <div class="field"><label for="oTitle">اسم الفرصة</label><input type="text" id="oTitle" maxlength="100"></div>
+              <div class="field"><label for="oOrg">الجهة</label><input type="text" id="oOrg" maxlength="100"></div>
+              <div class="field"><label for="oKind">النوع</label><select id="oKind"><option>تدريب</option><option>دورة</option><option>تطوع</option><option>استشارة</option><option>نشاط</option><option>منحة</option></select></div>
+              <div class="field"><label for="oSkill">المهارة</label><select id="oSkill"></select></div>
+              <div class="field"><label for="oTime">المدة</label><input type="text" id="oTime" maxlength="40" placeholder="مثلاً: 6 أسابيع"></div>
+              <div class="field"><label for="oOrder">الترتيب بالموقع</label><input type="number" id="oOrder" min="0" max="99" step="1" dir="ltr" style="text-align:right"></div>
+              <div class="field" style="grid-column:1/-1"><label for="oLink">رابط التفاصيل أو التقديم (اختياري)</label><input type="url" id="oLink" maxlength="300" dir="ltr" style="text-align:right" placeholder="https://"></div>
+            </div>
+            <label class="check"><input type="checkbox" id="oActive"><span>ظاهرة بالموقع</span></label>
+            <p class="err" id="oErr" aria-live="polite"></p>
+            <div class="row"><button class="btn dark" type="submit" id="oSave">احفظي</button><button class="link" type="button" id="oCancel">إلغاء</button></div>
+          </form>
+        </div>
+        <div class="grid g2" id="opList"></div>
+      </section>
+
+      <!-- REGISTRATIONS -->
+      <section data-pane="regs" hidden>
+        <div class="card">
+          <div class="top" style="margin-bottom:8px"><h3 style="margin:0">التسجيلات بالورش</h3>
+            <div class="row"><select id="wsFilter" style="width:auto;min-height:44px"></select><button class="btn" type="button" id="csv" style="min-height:44px">تنزيل CSV</button><button class="link" type="button" id="copy">نسخ</button></div>
+          </div>
+          <p class="small" id="toast" aria-live="polite" style="color:var(--gold-ink);min-height:22px;margin:0"></p>
+          <div class="scroll"><table class="stack"><thead><tr><th>الاسم</th><th>الهاتف</th><th>البريد</th><th>الورشة</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="regs"></tbody></table></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script src="db.js"></script>
+<script>
+{
+const C = window.MBS_CONFIG || {}, DB = window.MBSDB, T = C.targets || {tests:150, registrations:40};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const SKN = ['اللغة الإنجليزية','المهارات الرقمية','الخبرة والتدريب','التواصل والعرض','العمل الجماعي وحل المشكلات','السيرة الذاتية والمقابلة'];
+const SKS = ['اللغة','رقمية','الخبرة','التواصل','الفريق','السيرة'];
+const BANDS = [{id:'start', n:'بداية الطريق (0–8)'}, {id:'mid', n:'مفتاحك قيد الصنع (9–16)'}, {id:'near', n:'مفتاحك شبه جاهز (17–24)'}];
+const STATUS = {student:'طالب/ة', graduate:'خريج/ة'};
+const fmt = iso => iso ? new Date(iso).toLocaleString('ar-PS-u-nu-latn', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+let RES = [], REGS = [], WS = [], OPS = [];
+const wsName = r => (WS.find(w => w.id === r.workshop) || {}).name || r.workshopName || 'ورشة محذوفة';
+
+$('status').className = 'status ' + (DB.live ? 'live' : 'demo');
+$('status').textContent = DB.live ? 'متصل بقاعدة البيانات' : 'وضع تجريبي';
+$('demoNote').hidden = DB.live;
+$('wSkills').innerHTML = SKN.map((n, i) => `<label><input type="checkbox" value="${i}">${SKS[i]}</label>`).join('');
+$('oSkill').innerHTML = SKN.map((n, i) => `<option value="${i}">${n}</option>`).join('');
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+  document.querySelectorAll('[data-pane]').forEach(p => p.hidden = p.dataset.pane !== t.dataset.tab);
+}));
+
+async function load(){
+  $('updated').textContent = 'جاري التحميل...';
+  const parts = await Promise.allSettled([DB.list('results'), DB.list('registrations'), DB.getAll('workshops'), DB.getAll('opportunities')]);
+  const [r, g, w, o] = parts.map(p => p.status === 'fulfilled' ? p.value : null);
+  if (r) RES = r; if (g) REGS = g; if (w) WS = w; if (o) OPS = o;
+  renderStats(); renderWsList(); renderOpList(); renderRegs();
+  $('updated').textContent = parts.some(p => p.status === 'rejected')
+    ? 'ما قدرنا نجيب كل البيانات. تأكدي من قواعد Firestore ومن إنك داخلة بالحساب الصح.'
+    : 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-PS-u-nu-latn', {hour:'2-digit', minute:'2-digit'});
+}
+const pct = (a, b) => Math.min(100, b ? a / b * 100 : 0);
+
+/* ---------- stats ---------- */
+function renderStats(){
+  const res = RES, n = res.length;
+  $('kTests').innerHTML = `${n} <small>من ${T.tests}</small>`; $('kTestsBar').style.width = pct(n, T.tests) + '%';
+  $('kTestsT').textContent = n >= T.tests ? 'حققتي الهدف!' : `باقي ${T.tests - n} للوصول للهدف`;
+  const avg = n ? res.reduce((a, r) => a + (r.total || 0), 0) / n : 0;
+  $('kAvg').innerHTML = n ? `${avg.toFixed(1)} <small>من 24</small>` : '–';
+  $('kAvgT').textContent = n ? 'المستوى الغالب: ' + BANDS.map(b => ({b, c:res.filter(r => r.band === b.id).length})).sort((a,b) => b.c - a.c)[0].b.n.split(' (')[0] : 'لسا ما في نتائج';
+  $('kRegs').innerHTML = `${REGS.length} <small>من ${T.registrations}</small>`; $('kRegsBar').style.width = pct(REGS.length, T.registrations) + '%';
+  $('kRegsT').textContent = WS.map(w => `«${w.name}»: ${REGS.filter(r => r.workshop === w.id).length}`).join(' · ');
+  const wk = Date.now() - 7*864e5, week = res.filter(r => r.createdAt && new Date(r.createdAt) >= wk).length;
+  $('kWeek').textContent = week; $('kWeekT').textContent = n ? `${Math.round(week / n * 100)}% من كل الاختبارات` : '';
+  const av = SKN.map((_, i) => n ? res.reduce((a, r) => a + ((r.skills || [])[i] || 0), 0) / n : 0);
+  const weak = av.map((v, i) => ({v, i})).sort((a, b) => a.v - b.v).slice(0, 2).map(o => o.i);
+  $('skills').innerHTML = SKN.map((s, i) => `<div class="hrow ${n && weak.includes(i) ? 'weak' : ''}"><span>${s}</span><div class="bar"><i style="width:${av[i] / 4 * 100}%"></i></div><b>${n ? av[i].toFixed(1) : '–'}</b></div>`).join('');
+  $('bands').innerHTML = BANDS.map(b => { const c = res.filter(r => r.band === b.id).length;
+    return `<div class="hrow"><span>${b.n}</span><div class="bar"><i style="width:${pct(c, n)}%"></i></div><b dir="ltr">${c}${n ? ` · ${Math.round(c / n * 100)}%` : ''}</b></div>`; }).join('');
+  const days = [], today = new Date(); today.setHours(0, 0, 0, 0);
+  for (let k = 20; k >= 0; k--) days.push({d:new Date(today - k * 864e5), c:0});
+  res.forEach(r => { if (!r.createdAt) return; const d = new Date(r.createdAt); d.setHours(0, 0, 0, 0); const o = days.find(x => x.d.getTime() === d.getTime()); if (o) o.c++; });
+  const mx = Math.max(1, ...days.map(x => x.c));
+  $('days').innerHTML = days.map((x, k) => `<div class="${x.c ? '' : 'z'}" title="${x.d.toLocaleDateString('ar-PS-u-nu-latn')}: ${x.c}"><span>${x.c || ''}</span><i style="height:${x.c / mx * 100}%"></i><span>${k % 3 === 0 ? x.d.getDate() + '/' + (x.d.getMonth() + 1) : ''}</span></div>`).join('');
+}
+
+/* ---------- shared: inline delete confirm ---------- */
+function confirmBox(host, text, onYes){
+  host.insertAdjacentHTML('beforeend', `<div class="confirm" data-cf><p style="margin:0 0 8px">${text}</p><div class="row"><button class="btn dark" type="button" data-yes style="min-height:44px">آه، احذفي</button><button class="link" type="button" data-no>لا</button></div></div>`);
+  const box = host.querySelector('[data-cf]');
+  box.querySelector('[data-no]').onclick = () => box.remove();
+  box.querySelector('[data-yes]').onclick = async () => { box.querySelector('[data-yes]').disabled = true; try { await onYes(); } catch(e) { box.querySelector('p').textContent = 'ما زبط الحذف، جربي كمان مرة.'; box.querySelector('[data-yes]').disabled = false; } };
+}
+
+/* ---------- workshops ---------- */
+let wsEdit = null;
+function renderWsList(){
+  $('wsSeed').innerHTML = !WS.length ? `<div class="card" style="margin-bottom:18px"><h3>لسا ما في ورش بقاعدة البيانات</h3><p class="muted">بتقدري تضيفي الورش الثلاث من البروبوزال («سيرتك بتحكي»، «أدواتك الرقمية»، «قدّم حالك») بكبسة وحدة، وبعدين تعدّلي مواعيدها.</p><button class="btn" type="button" id="seed">أضيفي الورش الثلاث</button></div>` : '';
+  $('wsList').innerHTML = WS.map(w => { const reg = REGS.filter(r => r.workshop === w.id).length;
+    return `<div class="card item ${w.active === false ? 'off' : ''}" data-id="${esc(w.id)}"><div>
+      <h3>«${esc(w.name)}»</h3><p class="muted" style="margin:0">${esc(w.date)} · ${esc(w.place)}</p>
+      <div class="meta">${(w.skills || []).map(i => `<span class="pill">${SKS[i]}</span>`).join('')}
+        <span class="pill ${w.open === false ? '' : 'ye'}">${w.open === false ? 'التسجيل مسكّر' : 'التسجيل مفتوح'}</span>
+        <span class="pill">${w.seats > 0 ? `${w.registered || 0} من ${w.seats} مقعد` : `${w.registered || 0} مسجّل`}</span>
+        ${w.active === false ? '<span class="pill">مخفية</span>' : ''}</div>
+      ${reg !== (w.registered || 0) ? `<p class="small muted" style="margin:8px 0 0">التسجيلات المحفوظة: ${reg}</p>` : ''}
+      </div><div class="acts"><button class="btn ghost" type="button" data-edit style="min-height:44px">تعديل</button><button class="link" type="button" data-toggle>${w.open === false ? 'افتحي التسجيل' : 'سكّري التسجيل'}</button><button class="link" type="button" data-del style="color:#A3261C">حذف</button></div></div>`; }).join('');
+}
+function wsFormOpen(w){
+  wsEdit = w ? w.id : null;
+  $('wsFormTitle').textContent = w ? `تعديل «${w.name}»` : 'ورشة جديدة';
+  $('wName').value = w ? w.name : ''; $('wOutput').value = w ? w.output || '' : ''; $('wAbout').value = w ? w.about || '' : '';
+  $('wDate').value = w ? w.date || '' : ''; $('wPlace').value = w ? w.place || '' : 'نابلس';
+  $('wSeats').value = w ? (w.seats || 0) : 20; $('wOrder').value = w ? (w.order ?? '') : WS.length + 1;
+  $('wSkills').querySelectorAll('input').forEach(c => c.checked = !!(w && (w.skills || []).includes(+c.value)));
+  $('wOpen').checked = w ? w.open !== false : true; $('wActive').checked = w ? w.active !== false : true;
+  $('wErr').textContent = ''; $('wsFormCard').hidden = false; $('wsFormCard').scrollIntoView({behavior:'smooth', block:'start'}); $('wName').focus({preventScroll:true});
+}
+$('wsNew').addEventListener('click', () => wsFormOpen(null));
+$('wCancel').addEventListener('click', () => { $('wsFormCard').hidden = true; });
+$('wsForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const data = { name:$('wName').value.trim(), output:$('wOutput').value.trim(), about:$('wAbout').value.trim(), date:$('wDate').value.trim() || 'يُعلن قريباً',
+    place:$('wPlace').value.trim(), seats:Math.max(0, parseInt($('wSeats').value || '0', 10) || 0), order:parseInt($('wOrder').value || '0', 10) || 0,
+    skills:[...$('wSkills').querySelectorAll('input:checked')].map(c => +c.value), open:$('wOpen').checked, active:$('wActive').checked };
+  if (data.name.length < 2) return $('wErr').textContent = 'اكتبي اسم الورشة.';
+  if (!data.skills.length) return $('wErr').textContent = 'اختاري مهارة وحدة على الأقل، عشان الموقع يقترح الورشة للي ناقصته هاي المهارة.';
+  if (!wsEdit) data.registered = 0;
+  $('wSave').disabled = true;
+  try { await DB.save('workshops', wsEdit, data); $('wsFormCard').hidden = true; await load(); }
+  catch(ex) { $('wErr').textContent = 'ما زبط الحفظ. تأكدي إنك داخلة بحساب المسؤولة.'; }
+  finally { $('wSave').disabled = false; }
+});
+$('wsList').addEventListener('click', async e => {
+  const card = e.target.closest('[data-id]'); if (!card) return; const w = WS.find(x => x.id === card.dataset.id);
+  if (e.target.closest('[data-edit]')) wsFormOpen(w);
+  if (e.target.closest('[data-toggle]')) { try { await DB.save('workshops', w.id, {open: w.open === false}); await load(); } catch(ex) {} }
+  if (e.target.closest('[data-del]') && !card.querySelector('[data-cf]')) confirmBox(card.firstElementChild, `بدك تحذفي «${esc(w.name)}»؟ التسجيلات القديمة بتضلها محفوظة، بس الورشة بتختفي من الموقع.`, async () => { await DB.remove('workshops', w.id); await load(); });
+});
+$('wsSeed').addEventListener('click', async e => {
+  if (e.target.id !== 'seed') return; e.target.disabled = true;
+  try { for (const w of (C.defaultWorkshops || [])) await DB.save('workshops', null, {...w, registered:0, active:true}); await load(); }
+  catch(ex) { e.target.disabled = false; e.target.textContent = 'ما زبطت الإضافة، جربي كمان مرة'; }
+});
+
+/* ---------- opportunities ---------- */
+let opEdit = null;
+function renderOpList(){
+  $('opList').innerHTML = OPS.length ? OPS.map(o => `<div class="card item ${o.active === false ? 'off' : ''}" data-id="${esc(o.id)}"><div>
+    <h3>${esc(o.title)}</h3><p class="muted" style="margin:0">${esc(o.org)}</p>
+    <div class="meta"><span class="pill ye">${SKS[o.skill] || ''}</span><span class="pill">${esc(o.kind)}</span><span class="pill">${esc(o.time)}</span>${o.active === false ? '<span class="pill">مخفية</span>' : ''}${o.link ? '<span class="pill">فيها رابط</span>' : ''}</div>
+    </div><div class="acts"><button class="btn ghost" type="button" data-edit style="min-height:44px">تعديل</button><button class="link" type="button" data-del style="color:#A3261C">حذف</button></div></div>`).join('')
+    : '<p class="muted">لسا ما في فرص. أضيفي أول فرصة من زر «+ فرصة جديدة».</p>';
+}
+function opFormOpen(o){
+  opEdit = o ? o.id : null;
+  $('opFormTitle').textContent = o ? 'تعديل الفرصة' : 'فرصة جديدة';
+  $('oTitle').value = o ? o.title : ''; $('oOrg').value = o ? o.org || '' : ''; $('oKind').value = o ? o.kind || 'تدريب' : 'تدريب';
+  $('oSkill').value = o ? String(o.skill ?? 0) : '0'; $('oTime').value = o ? o.time || '' : ''; $('oLink').value = o ? o.link || '' : '';
+  $('oOrder').value = o ? (o.order ?? '') : OPS.length + 1; $('oActive').checked = o ? o.active !== false : true;
+  $('oErr').textContent = ''; $('opFormCard').hidden = false; $('opFormCard').scrollIntoView({behavior:'smooth', block:'start'}); $('oTitle').focus({preventScroll:true});
+}
+$('opNew').addEventListener('click', () => opFormOpen(null));
+$('oCancel').addEventListener('click', () => { $('opFormCard').hidden = true; });
+$('opForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const data = { title:$('oTitle').value.trim(), org:$('oOrg').value.trim(), kind:$('oKind').value, skill:+$('oSkill').value,
+    time:$('oTime').value.trim(), link:$('oLink').value.trim(), order:parseInt($('oOrder').value || '0', 10) || 0, active:$('oActive').checked };
+  if (data.title.length < 2) return $('oErr').textContent = 'اكتبي اسم الفرصة.';
+  if (data.org.length < 2) return $('oErr').textContent = 'اكتبي الجهة اللي بتقدم الفرصة.';
+  if (data.link && !/^https?:\/\/\S+\.\S+/i.test(data.link)) return $('oErr').textContent = 'الرابط لازم يبلش بـ https://';
+  $('oSave').disabled = true;
+  try { await DB.save('opportunities', opEdit, data); $('opFormCard').hidden = true; await load(); }
+  catch(ex) { $('oErr').textContent = 'ما زبط الحفظ. تأكدي إنك داخلة بحساب المسؤولة.'; }
+  finally { $('oSave').disabled = false; }
+});
+$('opList').addEventListener('click', e => {
+  const card = e.target.closest('[data-id]'); if (!card) return; const o = OPS.find(x => x.id === card.dataset.id);
+  if (e.target.closest('[data-edit]')) opFormOpen(o);
+  if (e.target.closest('[data-del]') && !card.querySelector('[data-cf]')) confirmBox(card.firstElementChild, `بدك تحذفي «${esc(o.title)}»؟`, async () => { await DB.remove('opportunities', o.id); await load(); });
+});
+
+/* ---------- registrations ---------- */
+function filtered(){ const f = $('wsFilter').value; return REGS.filter(r => !f || r.workshop === f); }
+function renderRegs(){
+  const keep = $('wsFilter').value;
+  $('wsFilter').innerHTML = `<option value="">كل الورش</option>` + WS.map(w => `<option value="${esc(w.id)}">«${esc(w.name)}»</option>`).join('');
+  if (WS.some(w => w.id === keep)) $('wsFilter').value = keep;
+  const L = filtered();
+  $('regs').innerHTML = L.length ? L.map(r => `<tr><td data-l="الاسم">${esc(r.name)}</td><td data-l="الهاتف" dir="ltr" style="text-align:right">${esc(r.phone)}</td><td data-l="البريد" dir="ltr" style="text-align:right">${esc(r.email)}</td><td data-l="الورشة">«${esc(wsName(r))}»</td><td data-l="الحالة">${esc(STATUS[r.status] || r.status)}</td><td data-l="التاريخ">${fmt(r.createdAt)}</td></tr>`).join('')
+    : `<tr><td colspan="6" class="muted">لسا ما في تسجيلات${$('wsFilter').value ? ' بهاي الورشة' : ''}.</td></tr>`;
+}
+const rowsOut = f => [['الاسم','الهاتف','البريد','الورشة','الحالة','التاريخ'], ...filtered().map(r => [r.name, r.phone, r.email, wsName(r), STATUS[r.status] || r.status, f(r.createdAt)])];
+$('wsFilter').addEventListener('change', renderRegs);
+$('refresh').addEventListener('click', load);
+$('csv').addEventListener('click', () => {
+  const csv = '﻿' + rowsOut(x => x || '').map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+    a.download = 'tasjeelat-mish-bas-shahada.csv'; document.body.appendChild(a); a.click(); a.remove();
+    $('toast').textContent = 'إذا ما نزل الملف، استخدمي زر «نسخ» والصقي بـ Google Sheets.'; } catch(e) { $('toast').textContent = 'ما زبط التنزيل، استخدمي «نسخ».'; }
+});
+$('copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rowsOut(fmt).map(r => r.join('\t')).join('\n')); $('toast').textContent = 'انسخ الجدول، الصقيه بـ Google Sheets أو Excel.'; }
+  catch(e) { $('toast').textContent = 'ما زبط النسخ من هالمتصفح.'; }
+});
+
+/* ---------- auth ---------- */
+$('lf').addEventListener('submit', async e => {
+  e.preventDefault(); $('lerr').textContent = ''; $('lbtn').disabled = true;
+  try { await DB.signIn($('le').value.trim(), $('lp').value); }
+  catch(ex) { $('lerr').textContent = 'البريد أو كلمة السر غلط.'; }
+  finally { $('lbtn').disabled = false; }
+});
+$('logout').addEventListener('click', () => DB.signOut());
+DB.onAuth(u => {
+  const ok = !!u;
+  $('login').hidden = ok; $('dash').hidden = !ok; $('logout').hidden = !DB.live;
+  if (ok) load();
+}).catch(() => { $('login').hidden = false; $('lerr').textContent = 'ما قدرنا نتصل بـ Firebase. تأكدي من الإعدادات بملف config.js.'; });
+}
+</script>
+</body>
+</html>
